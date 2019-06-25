@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Welcome to GitHub Pages
 
 You can use the [editor on GitHub](https://github.com/ahalfpen727/MotionEyePi/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
@@ -35,3 +36,7 @@ Your Pages site will use the layout and styles from the Jekyll theme you have se
 ### Support or Contact
 
 Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+=======
+# RaspberryPi-Device-Setup
+scripts and resources to setup Raspberry Pis (0,2,3,A,B+) for network auditing
+>>>>>>> f99e1bf592db5b8eb4566ae7eb1f2b6f4316717f
