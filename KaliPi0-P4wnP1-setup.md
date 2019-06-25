@@ -1,4 +1,4 @@
-## P4wnP1 on raspberry pi zero w
+# P4wnP1 on raspberry pi zero w
 # https://p4wnp1.readthedocs.io/en/latest/Getting-Started-Subfolder/Installation/
 
 > ifconfig usb0 up
