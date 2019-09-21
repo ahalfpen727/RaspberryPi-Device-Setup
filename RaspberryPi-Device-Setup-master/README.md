@@ -88,39 +88,3 @@ alert icmp any any -> $HOME_NET any (msg:"ICMP test"; sid:10000001; rev:1;)
 ```
 /usr/local/bin/snort -A console -q -u snort -g snort -c /usr/local/etc/snort/snort.conf -i eth0
 ```
-
-Other useful Commands
-``` 
-Run these proc directory commands to uncover other hardware information.
-
-    cat /proc/meminfo displays details about the Raspberry Pi’s memory.
-    cat /proc/partitions reveals the size and number of partitions on your SD card or HDD.
-    cat /proc/version shows you which version of the Pi you are using.
-
-Check the current Linux versions
-
-Use these commands to assess what your Raspberry Pi might be capable of. It doesn’t end there. Find further information using the vcgencmd series of commands:
-
-    vcgencmd measure_temp reveals the CPU temperature (vital if you’re concerned about airflow).
-    vcgencmd get_mem arm && vcgencmd get_mem gpu will reveal the memory split between the CPU and GPU, which can be adjusted in the config screen.
-    free -o -h will display the available system memory.
-    top d1 checks the load on your CPU, displaying details for all cores.
-    df -h is a great way to quickly check the free disk space on your Raspberry Pi.
-
-How much free space does your Raspberry Pi's SD card have?
-
-    uptime is a simple command that displays the Raspberry Pi’s load average.
-
-3 Commands to Check Connected Devices
-
-Just as you can list the contents of a directory with a single command, Linux lets you list devices connected to your computer.
-
-    ls /dev/sda* displays a list of partitions on the SD card. For a Raspberry Pi with a HDD attached, substitute sda* with hda*.
-    lsusb displays all attached USB devices. This is crucial for connecting a hard disk drive or other USB hardware that requires configuration.
-
-Use lsusb to learn about USB devices connected to the Raspberry Pi
-
-If the item is listed here, you should be able to set it up.
-
-    lsblk is another list command you can use. This displays information about all attached block devices (storage that reads and writes in blocks)
-```
