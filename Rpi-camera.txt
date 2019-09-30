@@ -1,0 +1,118 @@
+Taking a Picture
+
+To capture the picture, type the following command in the terminal.
+
+    raspistill -o pic.jpg
+
+This will capture the image after 5 seconds. You will also see a preview while capturing the picture or video  if you are using an external or any other device connected through the HDMI cable. If you are controlling your Raspberry pi through the Remote connection, then you will not see the preview window.
+
+If you want to capture the picture after some specific time, then use the following command. Enter the time in milliseconds after ‘-t’.
+
+    raspistill -t 10000 -o pic1.jpg
+
+If you just want the preview. Then use the below command
+
+    raspistill -p -o
+
+Now if you want to apply a vertical flip while capturing the image, then use the following command.
+
+    raspistill -vf -o pic2.jpg
+
+If you want to apply a horizontal flip while capturing the image, then use the following command.
+
+    raspistill -vh -o pic3.jpg
+
+If you want to apply both horizontal and vertical flip while capturing the image, then use the following command.
+
+    raspistill -vf -vh -o pic4.jpg
+
+The picture are captured at the default resolution. If you want to capture the image at different resolution, then use the below command.
+
+    raspistill -o pic5.jpg -w 640 -h 480
+
+If you want to capture the image in ‘.png’ format, then use the following command
+
+    raspistill -o pic6.png -e png
+
+Python code to capture the image
+
+Now if you want to capture the image using the python code, then you will require a library for the camera module. So run the following command in the terminal and your library will installed.
+
+    sudo apt-get install python-picamera
+
+To capture the image using python code, run the following code in the python file.
+
+    import picamera     # Importing the library for camera module
+    from time import sleep
+    camera = picamera.PiCamera()    # Setting up the camera
+    camera.start_preview()
+    sleep(5)
+    camera.capture('/home/pi/Desktop/picture/imag.jpg') # Capturing the image
+    camera.stop_preview()
+    print('Done')
+
+To rotate the image, use the following code.
+
+    import picamera     # Importing the library for camera module
+    from time import sleep
+    camera = picamera.PiCamera()    # Setting up the camera
+    camera.rotation = 180
+    camera.start_preview()
+    sleep(5)
+    camera.capture('/home/pi/Desktop/picture/imag.jpg') # Capturing the image
+    camera.stop_preview()
+    print('Done')
+
+To add text to the image, use the following code
+
+    import picamera     # Importing the library for camera module
+    from time import sleep
+    camera = picamera.PiCamera()    # Setting up the camera
+    camera.start_preview()
+    camera.annotate_text = 'Picture Taken with Raspberry camera'
+    sleep(5)
+    camera.capture('/home/pi/Desktop/picture/imag.jpg') # Capturing the image
+    camera.stop_preview()
+    print('Done')
+
+Recording a video with Raspberry pi camera module
+
+To record a video, type the following command in the terminal. It will record a video of 5 seconds. The video will be saved in the ‘.h264’ format.
+
+    raspivid -o video.h264
+
+You can also record the video while flipping horizontally or vertically using ‘-vh’ and ‘vf’ like we did while capturing the image.
+
+To record video while flipping horizontally.
+
+    raspivid -vh -o video1.h264
+
+To record video while flipping vertically.
+
+    raspivid -vf -o video2.h264
+
+To record the video for specific time. Following command will record the video for 15 seconds.
+
+    raspivid -o video3.h264 -t 15000
+
+Now if you want to watch the video you have recorded, then you will have to install the video player. Type the following command to install it.
+
+    sudo apt-get install omxplayer
+
+Then go to the directory where you have saved the video and type the following command. Replace ‘video’ in the following command with you video file name.
+
+    omxplayer video.h264
+
+It may actually play at a faster speed than what has been recorded, due to omxplayer’s fast frame rate.
+Python code for Recording Video
+
+To record the video using the python code, type the below code in the python file. You will not see the preview window if you are controlling the raspberry pi through SSH connection.
+
+    import picamera     # Importing the library for camera module
+    from time import sleep  # Importing sleep from time library to add delay in program
+    camera = picamera.PiCamera()    # Setting up the camera
+    camera.start_preview()      # You will see a preview window while recording
+    camera.start_recording('/home/pi/Desktop/video.h264') # Video will be saved at desktop
+    sleep(5)
+    camera.stop_recording()
+    camera.stop_preview()
