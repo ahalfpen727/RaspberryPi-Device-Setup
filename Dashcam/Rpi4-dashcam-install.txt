@@ -1,0 +1,122 @@
+ Pi4 dashcam install
+An abbreviated guide to configuring the Pi4 as a two camera dashcam
+
+Download the latest version of Raspbian and unzip
+ https://downloads.raspberrypi.org/raspbian_lite_latest
+
+Install the image to a MicroSD card. For examples see: https://elinux.org/RPi_Easy_SD_Card_Setup
+
+When the image is installed place the card in your Pi4, connect a monitor and a keyboard.
+Login via ssh is probably disabled so login locally as the user 'pi' with the password 'raspberry'.
+
+- Start the initial configuration by running raspi-config.
+pi@raspberrypi ~ $ sudo raspi-config
+1. Change password
+2. Change hostname, setup wifi if desired
+4. Change timezone
+5. Enable camera and ssh
+7. Memory split (512 max)
+<Finish>
+(you can use the arrow keys, tab, ESC & Return to navigate)
+
+When you are finished with the configuration reboot the Pi.
+
+- Login back in and update the Rasbian packages
+pi@rasp-pi4-dash ~ $ sudo apt-get update
+pi@rasp-pi4-dash ~ $ sudo apt-get upgrade
+
+- Install the excellent picamera software
+pi@rasp-pi4-dash ~ $ sudo apt-get install python3-picamera
+
+- Add the 'camera' user and give it a password.
+pi@rasp-pi4-dash ~ $ sudo useradd -m -G video camera
+pi@rasp-pi4-dash ~ $ sudo passwd camera
+pi@rasp-pi4-dash ~ $ sudo -iu camera
+camera@rasp-p4-dash ~ $ mkdir -p front rear sound logs/tmp usb/front usb/logs/tmp
+camera@rasp-p4-dash ~ $ echo "0" > /home/camera/usb/logs/tmp/event.ct
+Change the file permissions so the camera directories are available to all.
+camera@rasp-p4-dash ~ $ chmod -R 777 /home/camera
+camera@rasp-p4-dash ~ $ exit
+
+- Install the 'motion' program for the USB camera
+pi@rasp-pi4-dash ~ $ sudo apt-get install motion
+
+- Edit the motion configuration file and modify some of the variables
+pi@rasp-pi4-dash ~ $ sudo vi /etc/motion/motion.conf
+daemon on
+width 512         <— change to suit your camera
+height 288        <— change to suit your camera
+framerate 12   <— change to suit your camera
+max_movie_time 600
+emulate_motion on
+output_pictures off
+ffmpeg_video_codec mkv
+target_dir /home/camera/rear
+movie_filename %Y%m%d%H%M-%v
+stream_port 8080
+stream_localhost off
+webcontrol_port 9080
+webcontrol_parms 1
+Near the end of the file, remove the comment ';' so we can use a camera specific configuration file
+camera /etc/motion/camera1.conf
+
+- Install the 'wiringpi' software so we can access the GPIO pins.
+pi@rasp-pi4-dash ~ $ cd ; mkdir wiringpi ; cd wiringpi
+pi@rasp-pi4-dash ~ $ wget https://project-downloads.drogon.net/wiringpi-latest.deb
+pi@rasp-pi4-dash ~ $ sudo dpkg -i wiringpi-latest.deb
+
+- Install the GPS software and add your GPS device to the configuration file.
+N.B. If you do not have a GPS device but wish to use 'picam.py' for the Pi camera the gpsd program still needs to be installed.
+pi@rasp-pi4-dash ~ $  sudo apt-get install gpsd
+- Add our GPS device to the configuration file.
+pi@rasp-pi4-dash ~ $ sudo vi /etc/default/gpsd
+DEVICES="/dev/ttyAMA0"
+GPSD_OPTIONS="-F /var/run/gpsd.sock"
+
+Unfortuantely hciuart/hciattach takes our serial connection to /dev/ttyAMA0. To free it up we need to disable it by editting '/boot/config.txt' and adding 'dtoverlay=pi3-disable-bt'. Sadly however, this disables bluetooth. If anyone has a better way please let me know.
+pi@rasp-pi4-dash ~ $ sudo vi /boot/config.txt
+[all]
+dtoverlay=pi3-disable-bt
+
+(A reboot is then required)
+
+- Download the dashcam scripts
+pi@rasp-pi4-dash ~ $ sudo -i
+root@rasp-pi4-dash:~# cd;wget https://"drive.google.com/uc?id=1hKQTJ4sLpXROPjRr42hTni8Zmx_xVid6&export=download" -O scripts.tar
+root@rasp-pi4-dash:~# tar -xf scripts.tar;chown -R 0:0 scripts;rm scripts.tar
+In the 'scripts' directory edit 'global.rc' and change the settings to your needs.
+
+If you do not have a GPS device change the settings in global.rc to this;
+GPS_enabled             no              [yes] / no      If 'no' recording starts immediately, date and time are not set.
+GPS_wait                no             [yes] / no      Wait for GPS fix before recording starts
+and edit picam.py....
+
+- Configure a startup service for the dashcam script
+pi@rasp-pi4-dash ~ $ sudo vi /etc/systemd/system/dashcam.service
+
+[Unit]
+Description=Dashcam control program
+After=local-fs.target
+
+[Service]
+ExecStart=/root/scripts/dashcam.sh
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+pi@rasp-pi4-dash ~ $ sudo systemctl daemon-reload
+pi@rasp-pi4-dash ~ $ sudo systemctl enable dashcam
+
+- Extras
+If you want to overclock your Pi4 to 1750Mhz add this to the end of config.txt and reboot...
+pi@rasp-pi4-dash ~ $ sudo vi /boot/config.txt
+over_voltage=2
+arm_freq=1750
+
+If you want to go to 2000Mhz then we need to install a slightly different kernel. For most uses it will probably be fine but it should not be done lightly.
+pi@rasp-pi4-dash ~ $ sudo rpi-update
+pi@rasp-pi4-dash ~ $ sudo vi /boot/config.txt
+over_voltage=4
+arm_freq=2000
+
+GPIO pin details: https://github.com/RPi-Distro/raspi-gpio/commit/80fa7d04eafb3ea34fc6f2d32de5f1873b5fb369
