@@ -1,0 +1,7 @@
+IP address	192.168.1.130/24
+Gateway	   	192.168.1.2
+
+view pihole web interface at httpL//pi.hole/admin or http://192.168.1.130/admin
+IPv4:	    192.168.1.130
+IPv6:	    fd71:a0d0:3aa2:0:ba27:ebff:fe2d:9a29
+passwd	    ZC1x_TrF
