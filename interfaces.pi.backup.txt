@@ -1,0 +1,53 @@
+<<<<<<< HEAD
+# interfaces(5) file used by ifup(8) and ifdown(8)
+=======
+## P4wnP1 on raspberry pi zero w
+# https://p4wnp1.readthedocs.io/en/latest/Getting-Started-Subfolder/Installation/
+
+> ifconfig usb0 up
+# enable static ip
+> ifconfig usb0 192.168.0.1
+# Important: If the interface usb0 isn't configured to manual setup, it is likely that a DHCP client is running. Trying to retreive a DHCP lease would wipe the IP configuration done in step 10 (ending up with Internet connection loss at some later point). The quick and dirty way to circumvent this on Kali, is to stop the network manager service with 
+> service network-manager stop
+> iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+> echo 1 > /proc/sys/net/ipv4/ip_forward
+
+
+# ssh into pi
+# from ssh run
+> route add -net default gw 169.254.241.1
+
+> echo nameserver 8.8.8.8 > /etc/resolv.conf
+
+> cd /home/pi
+> git clone --recursive https://github.com/mame82/P4wnP1
+> cd P4wnP1
+> ./install.sh
+
+> sudo update-rc.d ssh enable
+> systsystemctl enable bluetooth && systemctl enable hciuart
+>>>>>>> 1ea298a1384cb475fddb09308b8a5baecc28e573
+
+# Please note that this file is written to be used with dhcpcd
+# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+# Include files from /etc/network/interfaces.d:
+# source-directory /etc/network/interfaces.d
+
+# Enable DHCP client
+# iface eth0 inet dhcp
+
+# Enable static IP for ethernet
+auto lo
+iface lo inet loopback
+auto eth0
+iface eth0 inet static
+# static IP
+address 192.168.1.134
+# gateway IP
+gateway 192.168.1.1
+netmask 255.255.255.0
+
+# Network address family
+#network 192.168.0.1
+#broadcast 192.168.1.255
